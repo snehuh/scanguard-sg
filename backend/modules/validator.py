@@ -23,7 +23,7 @@ _PRIVATE_PATTERNS = [
     r"^0\.",
     r"^169\.254\.",   # link-local
     r"^::1$",
-    r"^fc[0-9a-f]{2}:",  # ULA IPv6
+    r"^fc[0-9a-fA-F]{2}:",  # ULA IPv6
     r"^fe80:",
     r"^0\.0\.0\.0$",
     r"^metadata\.google\.internal$",

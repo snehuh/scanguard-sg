@@ -81,8 +81,11 @@ def create_app() -> Flask:
         try:
             result = check_url(url)
             return jsonify(result)
+        except (ValueError, KeyError, TypeError) as exc:
+            logger.warning("URL analysis returned unexpected data [rid=%s]: %s", g.request_id, exc)
+            return jsonify({"error": "Analysis failed. Please try again.", "request_id": g.request_id}), 500
         except Exception:
-            # Log full stack trace server-side; return only a safe message + rid
+            # Catch-all for truly unexpected failures; log full traceback server-side
             logger.error(
                 "Unhandled error during URL check [rid=%s]",
                 g.request_id,

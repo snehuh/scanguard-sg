@@ -13,7 +13,9 @@ load_dotenv()
 
 
 class _Base:
-    SECRET_KEY: str = os.environ.get("SECRET_KEY", os.urandom(32).hex())
+    # No fallback for SECRET_KEY — must be supplied via environment in all
+    # environments. Development class provides a safe insecure default.
+    SECRET_KEY: str = os.environ.get("SECRET_KEY", "")
     DEBUG: bool = False
     # Comma-separated list of allowed CORS origins
     ALLOWED_ORIGINS: list[str] = os.environ.get(
@@ -27,6 +29,8 @@ class _Base:
 
 
 class Development(_Base):
+    # Insecure default key for local development only — never use in production
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-insecure-secret-change-me")
     DEBUG = True
     ALLOWED_ORIGINS = [
         "http://localhost:3000",

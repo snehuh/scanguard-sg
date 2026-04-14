@@ -54,7 +54,13 @@ def extract(url: str) -> dict:
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 def _is_ip(hostname: str) -> bool:
-    return bool(re.fullmatch(r"\d{1,3}(\.\d{1,3}){3}", hostname))
+    """Return True only for valid IPv4 addresses (each octet 0–255)."""
+    try:
+        import ipaddress  # noqa: PLC0415
+        ipaddress.IPv4Address(hostname)
+        return True
+    except ValueError:
+        return False
 
 
 def _shannon_entropy(text: str) -> float:
