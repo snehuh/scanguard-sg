@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!--
+    Content Security Policy (meta-tag fallback for GitHub Pages).
+    For production, enforce this as a server response header instead —
+    meta CSP does not cover all directives (e.g. frame-ancestors).
+  -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src  'self' https://unpkg.com;
+    style-src   'self';
+    connect-src 'self' https://api.scanguard.sg http://localhost:5000;
+    media-src   'self' blob:;
+    img-src     'self' data: blob:;
+    object-src  'none';
+    base-uri    'self';
+    form-action 'self';
+  " />
+
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+  <title>ScanGuard SG — QR Safety Checker</title>
+  <meta name="description" content="Free, instant QR code safety checker for Singaporeans. No app install needed." />
+  <meta name="theme-color" content="#1a1a2e" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <!-- Icons: place 192×192 and 512×512 PNGs in frontend/icons/ -->
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+</head>
+<body>
+
+  <!-- ── Header ────────────────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="header__brand">
+      <span class="header__shield" aria-hidden="true">🛡️</span>
+      <span class="header__title">ScanGuard <span class="header__sg">SG</span></span>
+    </div>
+    <p class="header__tagline">Safe QR scanning for Singaporeans</p>
+  </header>
+
+  <main class="main" id="app">
+
+    <!-- ── QR Camera Scanner ─────────────────────────────────────────── -->
+    <section class="card" aria-labelledby="scanner-heading">
+      <h2 class="card__title" id="scanner-heading">Scan a QR Code</h2>
+
+      <!-- html5-qrcode mounts its video element here -->
+      <div id="qr-reader" role="img" aria-label="QR code camera viewfinder"></div>
+
+      <div class="scanner-controls">
+        <button id="btn-start-scan" class="btn btn--primary">
+          📷 Start Camera
+        </button>
+        <button id="btn-stop-scan" class="btn btn--secondary" hidden>
+          ⏹ Stop Camera
+        </button>
+      </div>
+    </section>
+
+    <!-- ── Manual URL Input ───────────────────────────────────────────── -->
+    <section class="card" aria-labelledby="manual-heading">
+      <h2 class="card__title" id="manual-heading">Or Enter a URL Manually</h2>
+
+      <form id="url-form" novalidate>
+        <div class="input-group">
+          <label for="url-input" class="sr-only">URL to check</label>
+          <input
+            type="url"
+            id="url-input"
+            class="input"
+            placeholder="https://example.com"
+            autocomplete="off"
+            autocapitalize="none"
+            autocorrect="off"
+            spellcheck="false"
+            maxlength="2048"
+            aria-describedby="url-error"
+          />
+          <button type="submit" class="btn btn--primary" id="btn-check">
+            🔍 Check
+          </button>
+        </div>
+        <p id="url-error" class="error-msg" role="alert" aria-live="polite" hidden></p>
+      </form>
+    </section>
+
+    <!-- ── Loading ───────────────────────────────────────────────────── -->
+    <div id="loading" class="loading" role="status" aria-label="Analysing URL…" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Analysing URL…</p>
+    </div>
+
+    <!-- ── Result Card ────────────────────────────────────────────────── -->
+    <section
+      class="card result-card"
+      id="result-section"
+      aria-labelledby="result-verdict"
+      aria-live="polite"
+      hidden
+    >
+      <div class="result-header">
+        <span id="result-icon" class="result-icon" aria-hidden="true"></span>
+        <span id="result-verdict" class="result-verdict"></span>
+      </div>
+
+      <p id="result-url" class="result-url"></p>
+
+      <!-- SG-specific scam badge — shown only when is_sg_targeted = true -->
+      <span id="result-sg-badge" class="result-sg-badge" hidden></span>
+
+      <ul id="result-reasons" class="result-reasons" aria-label="Reasons for this verdict"></ul>
+
+      <button id="btn-scan-again" class="btn btn--secondary">
+        ↩ Check Another
+      </button>
+    </section>
+
+    <!-- ── Session History ────────────────────────────────────────────── -->
+    <section class="card" id="history-section" aria-labelledby="history-heading" hidden>
+      <h2 class="card__title" id="history-heading">This Session's Scans</h2>
+      <ul id="history-list" class="history-list" aria-label="Recent scans"></ul>
+      <button id="btn-clear-history" class="btn btn--ghost">🗑 Clear History</button>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <p>ScanGuard SG does not store your URLs. All analysis is performed in real-time.</p>
+    <p>
+      <a
+        href="https://github.com/snehuh/scanguard-sg"
+        target="_blank"
+        rel="noopener noreferrer"
+      >GitHub</a>
+    </p>
+  </footer>
+
+  <!--
+    html5-qrcode — loaded from CDN.
+    TODO: Compute the SHA-384 SRI hash for this exact version and add it as:
+      integrity="sha384-<hash>" crossorigin="anonymous"
+    Generate with: openssl dgst -sha384 -binary html5-qrcode.min.js | openssl base64 -A
+  -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+</body>
+</html>
